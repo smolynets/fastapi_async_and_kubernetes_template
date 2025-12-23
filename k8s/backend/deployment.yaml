@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: fastapi-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      # ================= INIT CONTAINER =================
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for Postgres to be ready..."
+              while ! nc -z $POSTGRES_HOST $POSTGRES_PORT; do
+                echo "Postgres not ready yet..."
+                sleep 2
+              done
+              echo "Postgres is ready!"
+          env:
+            - name: POSTGRES_HOST
+              value: "postgres"
+            - name: POSTGRES_PORT
+              value: "5432"
+      # ================= MAIN CONTAINER =================
+      containers:
+        - name: backend
+          image: backend:latest   # твій локальний образ для minikube
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: POSTGRES_USER
+              value: psql_user
+            - name: POSTGRES_PASSWORD
+              value: psql_password
+            - name: POSTGRES_HOST
+              value: postgres
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: DATABASE
+              value: postgres
