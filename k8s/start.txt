@@ -1,30 +1,30 @@
-# 1. Використовувати Docker Minikube
+# 1. Use Docker Minikube
 eval $(minikube docker-env)
 
-# 2. Зібрати локальний образ backend
+# 2. Build local backend image if need
 docker build -t backend:latest .
 
-# 3. Створити namespace
+# 3. Create namespace
 kubectl apply -f k8s/namespace.yaml
 
-# 4. Застосувати Postgres
+# 4. Apply Postgres
 kubectl apply -f k8s/postgres/pvc.yaml
 kubectl apply -f k8s/postgres/deployment.yaml
 kubectl apply -f k8s/postgres/service.yaml
 
-# 5. Перевірити, що Postgres піднявся
+# 5. Check Postgres
 kubectl get pods -n fastapi-app -w
 kubectl logs deployment/postgres -n fastapi-app
 
-# 6. Застосувати Backend
+# 6. Apply Backend
 kubectl apply -f k8s/backend/deployment.yaml
 kubectl apply -f k8s/backend/service.yaml
 
-# 7. Перевірити, що Backend піднявся
+# 7. Check Backend
 kubectl get pods -n fastapi-app -w
 kubectl logs deployment/backend -n fastapi-app
 
-# 8. Отримати URL для тестування у браузері
+# 8. Get URL for test in browser
 minikube service backend -n fastapi-app --url
 
 
