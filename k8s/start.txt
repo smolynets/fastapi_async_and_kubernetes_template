@@ -4,6 +4,11 @@ eval $(minikube docker-env)
 # 2. Build local backend image if need
 docker build -t backend:latest .
 
+# if dockerhub
+docker tag localhost/image_name:v1 username/image_name:v1
+docker push username/image_name:v1
+
+
 # 3. Create namespace
 kubectl apply -f k8s/namespace.yaml
 
