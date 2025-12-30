@@ -35,8 +35,8 @@ spec:
       # ================= MAIN CONTAINER =================
       containers:
         - name: backend
-          #image: backend:latest   # твій локальний образ для minikube
-          image: osmolynets/test_fastapi_kuber_async_backend:v1 # dockerhub
+          #image: backend:latest   # local image for minikube
+          image: osmolynets/test_fastapi_kuber_async_backend:v1 # for dockerhub
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
