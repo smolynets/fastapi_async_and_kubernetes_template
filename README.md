@@ -1,4 +1,24 @@
-# 0. Create Secrets
+# 1.1. Use Docker Minikube (optinal)
+eval $(minikube docker-env)
+
+# 1.2. Build local backend image if need (optinal)
+docker build -t backend:latest .
+# if dockerhub
+<!-- docker tag localhost/image_name:v1 username/image_name:v1
+docker push username/image_name:v1 -->
+docker buildx create --name multiarch --use
+docker buildx inspect --bootstrap
+# create image and push it to docker hub 
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -t <YOUR_DOCKERHUB_USERNAME>/test_fastapi_kuber_async_backend:v1 \
+  --push .
+
+# 2. Create namespace
+kubectl apply -f k8s/namespace.yaml
+
+
+# 3. Create secretes
 kubectl create secret generic postgres-secret \
   --from-literal=POSTGRES_USER=psql_user \
   --from-literal=POSTGRES_PASSWORD=psql_password \
@@ -6,20 +26,6 @@ kubectl create secret generic postgres-secret \
   --from-literal=POSTGRES_PORT=5432 \
   --from-literal=DATABASE=postgres \
   -n fastapi-app
-
-# 1. Use Docker Minikube
-eval $(minikube docker-env)
-
-# 2. Build local backend image if need
-docker build -t backend:latest .
-
-# if dockerhub
-docker tag localhost/image_name:v1 username/image_name:v1
-docker push username/image_name:v1
-
-
-# 3. Create namespace
-kubectl apply -f k8s/namespace.yaml
 
 # 4. Apply Postgres
 kubectl apply -f k8s/postgres/pvc.yaml
@@ -40,8 +46,3 @@ kubectl logs deployment/backend -n fastapi-app
 
 # 8. For test in browser
 kubectl port-forward svc/backend 8000:8000 -n fastapi-app
-
-
-
-### for macos
-docker tag localhost/backend:latest backend:latest # alias

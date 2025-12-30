@@ -1,12 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -e
 
-# Check if Alembic is installed
+echo "Checking Alembic..."
 alembic --version
 
-# Upgrade the database
+echo "Running migrations..."
 alembic upgrade head
 
-echo "#############################sdfsfddzfsfdsdzf###########"
+echo "############################# start fastapi #############################"
 
-# Start the FastAPI application
-uvicorn backend.main:app --host 0.0.0.0 --port 8000
+# Start FastAPI application
+exec uvicorn backend.main:app --host 0.0.0.0 --port 8000
