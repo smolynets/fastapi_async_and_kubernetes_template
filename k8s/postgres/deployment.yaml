@@ -15,19 +15,28 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:latest
+          image: postgres:18
           ports:
             - containerPort: 5432
           env:
             - name: POSTGRES_USER
-              value: psql_user
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_USER
             - name: POSTGRES_PASSWORD
-              value: psql_password
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
             - name: POSTGRES_DB
-              value: postgres
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: DATABASE
           volumeMounts:
             - name: postgres-data
-              mountPath: /var/lib/postgresql  # важливо!
+              mountPath: /var/lib/postgresql
       volumes:
         - name: postgres-data
           persistentVolumeClaim:
