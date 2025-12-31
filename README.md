@@ -1,11 +1,8 @@
 # 1.1. Use Docker Minikube (optinal)
 eval $(minikube docker-env)
 
-# 1.2. Build local backend image if need (optinal)
-docker build -t backend:latest .
-# if dockerhub
-<!-- docker tag localhost/image_name:v1 username/image_name:v1
-docker push username/image_name:v1 -->
+# 1.2. Build local backend image and push to docker hub
+## linux
 docker buildx create --name multiarch --use
 docker buildx inspect --bootstrap
 # create image and push it to docker hub 
@@ -13,6 +10,21 @@ docker buildx build \
   --platform linux/amd64,linux/arm64 \
   -t <YOUR_DOCKERHUB_USERNAME>/test_fastapi_kuber_async_backend:v1 \
   --push .
+
+## macos
+- podman manifest create docker.io/<YOUR_DOCKERHUB_USERNAME>/test_fastapi_kuber_async_backend:v1
+- podman build \
+  --platform linux/amd64 \
+  -t test_fastapi_kuber_async_backend:amd64 .
+- podman build \
+  --platform linux/arm64 \
+  -t test_fastapi_kuber_async_backend:arm64 .
+- podman manifest add docker.io/<YOUR_DOCKERHUB_USERNAME>/test_fastapi_kuber_async_backend:v1 \
+  test_fastapi_kuber_async_backend:amd64
+- podman manifest add docker.io/<YOUR_DOCKERHUB_USERNAME>/test_fastapi_kuber_async_backend:v1 \
+  test_fastapi_kuber_async_backend:arm64
+- podman manifest push \
+  docker.io/<YOUR_DOCKERHUB_USERNAME>/test_fastapi_kuber_async_backend:v1
 
 # 2. Create namespace
 kubectl apply -f k8s/namespace.yaml
